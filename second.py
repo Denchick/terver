@@ -43,11 +43,19 @@ class DrvProblem:
     @staticmethod
     def get_median(destribution_law):
         items = sorted(destribution_law.items(), key=lambda item: item[0])
-        for index in range(len(items)):
-            before = sum(item[1] for item in items[:index + 1])
-            after = sum(item[1] for item in items[index + 1:])
+        for i in range(len(items) - 1):
+            before = sum(item[1] for item in items[:i + 1])
+            after = sum(item[1] for item in items[i:])
             if before >= 0.5 and after >= 0.5:
-                return items[index]
+                return items[i][0]
+
+
+        #items = sorted(destribution_law.items(), key=lambda item: item[0])
+        #for index in range(len(items)):
+        #    before = sum(item[1] for item in items[:index + 1])
+        #    after = sum(item[1] for item in items[index + 1:])
+        #    if before >= 0.5 and after >= 0.5:
+        #        return items[index]
 
 
 if __name__ == '__main__':
@@ -56,8 +64,8 @@ if __name__ == '__main__':
     mu[3] = i(1)/3
     mu[4] = i(1)/3
 
-    one = lambda ks, mu:  ks**mu - mu**ks
-    other = lambda ks, mu: min(2 ** ks, mu) # КН-302
+    one = lambda ks, mu: ks ** mu - mu ** ks
+    other = lambda ks, mu: max(ks + mu, 2 * mu)
 
     one_destribution_law = DrvProblem.get_destribution_law(ksi, mu, one)
     other_destribution_law = DrvProblem.get_destribution_law(ksi, mu, other)
@@ -65,28 +73,23 @@ if __name__ == '__main__':
     one_expectation = DrvProblem.get_expectation(one_destribution_law)
     other_expectation = DrvProblem.get_expectation(other_destribution_law)
 
-    covariance_func = lambda xi, mu: (one(xi, mu) - one_expectation) * (other(xi, mu) - other_expectation)
-    covariance_destribution = DrvProblem.get_destribution_law(one_destribution_law, other_destribution_law, covariance_func)
+    one_dispersion = DrvProblem.get_dispersion(one_destribution_law)
+    other_dispersion = DrvProblem.get_dispersion(other_destribution_law)
+
+    covariance_func = lambda ks, mu: (one(ks, mu) - one_expectation) * (other(ks, mu) - other_expectation)
+    covariance_destribution = DrvProblem.get_destribution_law(ksi, mu, covariance_func)
     covariance = DrvProblem.get_expectation(covariance_destribution)
 
+    correlation = covariance / (one_dispersion * other_dispersion)**0.5
 
-    #print('===Распределение one===\nlambda ks, mu:  ks**mu - mu**ks', '\n')
-    #print('===Закон распределения one===')
-    #print(DrvProblem.get_as_string(one), '\n')
-    #print('===Матожидание one===')
-    #print(one_expectation, '\n')
-    #print('===Дисперсия one===')
-    #print(DrvProblem.get_dispersion(one), '\n')
-    #print('(a)===Медиана one===')
-    #print(DrvProblem.get_median(one), '\n')
-    #print('(b)===Среднеквадратичное отклонение===')
-    #print(DrvProblem.get_standard_deviation(one), '\n')
 
-    #print('===Распределение other===\nlambda ks, mu: max(ks + mu, 2 * mu)', '\n')
-    #print('===Матожидание other===')
-    #print(other_expectation, '\n')
-    print('===Ковариция one и other===')
-    print(covariance)
-    ##print('===Корреляция one и other===')
-    ##print(DrvProblem.get_correlation(one, other))
-
+    print('===Мое распределение===\nlambda ks, mu:  ks**mu - mu**ks', '\n')
+    print('(a)===Медиана===')
+    print(DrvProblem.get_median(one_destribution_law), '\n')
+    print('(b)===Среднеквадратичное отклонение===')
+    print(DrvProblem.get_standard_deviation(one_destribution_law), '\n')
+    print('===Другое распределение===\nlambda ks, mu: max(ks + mu, 2 * mu)', '\n')
+    print('===Их ковариция===')
+    print(covariance, '\n')
+    print('===Их корреляция===')
+    print(correlation)
