@@ -56,37 +56,37 @@ if __name__ == '__main__':
     mu[3] = i(1)/3
     mu[4] = i(1)/3
 
-    theta = lambda ks, mu:  ks**mu - mu**ks
-    another = lambda ks, mu: min(2 ** ks, mu) # КН-302
+    one = lambda ks, mu:  ks**mu - mu**ks
+    other = lambda ks, mu: min(2 ** ks, mu) # КН-302
 
-    one = DrvProblem.get_destribution_law(ksi, mu, theta)
-    other = DrvProblem.get_destribution_law(ksi, mu, another)
+    one_destribution_law = DrvProblem.get_destribution_law(ksi, mu, one)
+    other_destribution_law = DrvProblem.get_destribution_law(ksi, mu, other)
     
-    one_expectation = DrvProblem.get_expectation(one)
-    other_expectation = DrvProblem.get_expectation(other)
+    one_expectation = DrvProblem.get_expectation(one_destribution_law)
+    other_expectation = DrvProblem.get_expectation(other_destribution_law)
 
-    covariance_func = lambda xi, mu: (theta(xi, mu) - one_expectation) * (another(xi, mu) - other_expectation)
-    covariance_destribution = DrvProblem.get_destribution_law(one, other, covariance_func)
+    covariance_func = lambda xi, mu: (one(xi, mu) - one_expectation) * (other(xi, mu) - other_expectation)
+    covariance_destribution = DrvProblem.get_destribution_law(one_destribution_law, other_destribution_law, covariance_func)
     covariance = DrvProblem.get_expectation(covariance_destribution)
 
 
-    #print('===Распределение theta===\nlambda ks, mu:  ks**mu - mu**ks', '\n')
-    #print('===Закон распределения theta===')
+    #print('===Распределение one===\nlambda ks, mu:  ks**mu - mu**ks', '\n')
+    #print('===Закон распределения one===')
     #print(DrvProblem.get_as_string(one), '\n')
-    #print('===Матожидание theta===')
+    #print('===Матожидание one===')
     #print(one_expectation, '\n')
-    #print('===Дисперсия theta===')
+    #print('===Дисперсия one===')
     #print(DrvProblem.get_dispersion(one), '\n')
-    #print('(a)===Медиана theta===')
+    #print('(a)===Медиана one===')
     #print(DrvProblem.get_median(one), '\n')
     #print('(b)===Среднеквадратичное отклонение===')
     #print(DrvProblem.get_standard_deviation(one), '\n')
 
-    #print('===Распределение another===\nlambda ks, mu: max(ks + mu, 2 * mu)', '\n')
-    #print('===Матожидание another===')
+    #print('===Распределение other===\nlambda ks, mu: max(ks + mu, 2 * mu)', '\n')
+    #print('===Матожидание other===')
     #print(other_expectation, '\n')
-    #print('===Ковариция theta и another===')
-    #print(covariance)
-    ##print('===Корреляция theta и another===')
+    print('===Ковариция one и other===')
+    print(covariance)
+    ##print('===Корреляция one и other===')
     ##print(DrvProblem.get_correlation(one, other))
 
